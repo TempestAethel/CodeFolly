@@ -37,6 +37,8 @@
       height: 200px;
       transform-style: preserve-3d;
       animation: rotateCube 8s infinite linear;
+      transform-origin: center;
+      transition: transform 0.3s ease-in-out;
     }
 
     .cube-face {
@@ -46,7 +48,8 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: repeat(2, 1fr);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
       box-sizing: border-box;
     }
 
@@ -56,7 +59,15 @@
       justify-content: center;
       font-size: 16px;
       background-color: #333;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      margin: 3px;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .tile:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
     }
 
     .front  { transform: rotateY(  0deg) translateZ(100px); background-color: red; }
@@ -96,6 +107,7 @@
       margin-bottom: 10px;
       background-color: #333;
       color: white;
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
     }
 
     #generateButton {
@@ -134,7 +146,7 @@
 
   <div id="menu">
     <span class="close-menu" id="closeMenu">&times;</span>
-    <input type="number" id="sizeInput" min="2" max="100" placeholder="Enter size" value="2">
+    <input type="number" id="sizeInput" min="2" max="10" placeholder="Enter size" value="2">
     <br>
     <button id="generateButton">Generate Cube</button>
   </div>
@@ -142,14 +154,16 @@
   <script>
     // Cube color faces
     const colors = ['red', 'yellow', 'blue', 'green', 'white', 'orange'];
+    let cubeSize = 2; // Default size
 
     // Initialize with a 2x2 cube
-    generateCube(2);
+    generateCube(cubeSize);
 
     // Key listener to toggle the menu
     document.addEventListener('keydown', (e) => {
       if (e.key.toLowerCase() === 'm') {
         document.getElementById('menu').style.display = 'block';
+        document.getElementById('sizeInput').focus();  // Automatically focus the input field
       }
     });
 
@@ -193,14 +207,38 @@
     // Event listener for the generate button
     document.getElementById('generateButton').addEventListener('click', () => {
       const size = parseInt(document.getElementById('sizeInput').value, 10);
-      if (size >= 2 && size <= 100) {
+      if (size >= 2 && size <= 10) {
+        cubeSize = size;
         generateCube(size);
         document.getElementById('menu').style.display = 'none'; // Hide menu
       } else {
-        alert('Please enter a valid size between 2 and 100');
+        alert('Please enter a valid size between 2 and 10');
       }
     });
 
+    // Zoom functionality via mouse wheel
+    document.addEventListener('wheel', (e) => {
+      if (e.deltaY < 0 && cubeSize < 10) {
+        cubeSize++;
+      } else if (e.deltaY > 0 && cubeSize > 2) {
+        cubeSize--;
+      }
+      generateCube(cubeSize);
+    });
+
+    // Zoom functionality via keyboard
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '+') {
+        if (cubeSize < 10) {
+          cubeSize++;
+        }
+      } else if (e.key === '-') {
+        if (cubeSize > 2) {
+          cubeSize--;
+        }
+      }
+      generateCube(cubeSize);
+    });
   </script>
 
 </body>

@@ -216,17 +216,7 @@
       }
     });
 
-    // Zoom functionality via mouse wheel
-    document.addEventListener('wheel', (e) => {
-      if (e.deltaY < 0 && cubeSize < 10) {
-        cubeSize++;
-      } else if (e.deltaY > 0 && cubeSize > 2) {
-        cubeSize--;
-      }
-      generateCube(cubeSize);
-    });
-
-    // Zoom functionality via keyboard
+   // Zoom functionality via keyboard
     document.addEventListener('keydown', (e) => {
       if (e.key === '+') {
         if (cubeSize < 10) {

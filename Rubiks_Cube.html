@@ -17,24 +17,26 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #f0f0f0;
-      overflow: hidden;
+      background-color: #121212;
+      color: #fff;
       flex-direction: column;
       text-align: center;
+      overflow: hidden;
     }
 
     .footer {
       position: absolute;
       bottom: 10px;
       font-size: 16px;
+      color: #bbb;
     }
 
     .cube-container {
       position: relative;
-      width: 300px;
-      height: 300px;
+      width: 200px;
+      height: 200px;
       transform-style: preserve-3d;
-      animation: rotateCube 10s infinite linear;
+      animation: rotateCube 8s infinite linear;
     }
 
     .cube-face {
@@ -42,9 +44,9 @@
       width: 100%;
       height: 100%;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      border: 1px solid #ccc;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       box-sizing: border-box;
     }
 
@@ -53,56 +55,97 @@
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      border: 1px solid rgba(0, 0, 0, 0.2);
+      background-color: #333;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .front  { transform: rotateY(  0deg) translateZ(150px); background-color: red; }
-    .back   { transform: rotateY(180deg) translateZ(150px); background-color: yellow; }
-    .left   { transform: rotateY( 90deg) translateZ(150px); background-color: blue; }
-    .right  { transform: rotateY(-90deg) translateZ(150px); background-color: green; }
-    .top    { transform: rotateX( 90deg) translateZ(150px); background-color: white; }
-    .bottom { transform: rotateX(-90deg) translateZ(150px); background-color: orange; }
+    .front  { transform: rotateY(  0deg) translateZ(100px); background-color: red; }
+    .back   { transform: rotateY(180deg) translateZ(100px); background-color: yellow; }
+    .left   { transform: rotateY( 90deg) translateZ(100px); background-color: blue; }
+    .right  { transform: rotateY(-90deg) translateZ(100px); background-color: green; }
+    .top    { transform: rotateX( 90deg) translateZ(100px); background-color: white; }
+    .bottom { transform: rotateX(-90deg) translateZ(100px); background-color: orange; }
 
     @keyframes rotateCube {
-      0% { transform: rotateY(0deg); }
-      100% { transform: rotateY(360deg); }
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      50% { transform: rotateX(180deg) rotateY(180deg); }
+      100% { transform: rotateX(0deg) rotateY(360deg); }
     }
 
     #menu {
       display: none;
-      margin: 20px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+      width: 250px;
+      text-align: center;
     }
 
     #sizeInput {
-      width: 50px;
-      padding: 5px;
+      width: 100px;
+      padding: 10px;
       font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      background-color: #333;
+      color: white;
     }
 
     #generateButton {
-      padding: 5px 10px;
+      padding: 10px 15px;
       font-size: 16px;
       cursor: pointer;
+      background-color: #007BFF;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      transition: background-color 0.3s ease;
     }
+
+    #generateButton:hover {
+      background-color: #0056b3;
+    }
+
+    .close-menu {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 18px;
+      color: white;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
 
   <div class="cube-container" id="cubeContainer"></div>
-  
+
   <div class="footer">
     Click <strong>M</strong> for menu
   </div>
 
   <div id="menu">
-    <input type="number" id="sizeInput" min="2" max="100" placeholder="Enter size">
+    <span class="close-menu" id="closeMenu">&times;</span>
+    <input type="number" id="sizeInput" min="2" max="100" placeholder="Enter size" value="2">
+    <br>
     <button id="generateButton">Generate Cube</button>
   </div>
 
   <script>
     // Cube color faces
     const colors = ['red', 'yellow', 'blue', 'green', 'white', 'orange'];
-    
+
+    // Initialize with a 2x2 cube
+    generateCube(2);
+
     // Key listener to toggle the menu
     document.addEventListener('keydown', (e) => {
       if (e.key.toLowerCase() === 'm') {
@@ -110,19 +153,24 @@
       }
     });
 
+    // Close the menu when clicking the 'X' button
+    document.getElementById('closeMenu').addEventListener('click', () => {
+      document.getElementById('menu').style.display = 'none';
+    });
+
     // Function to generate the cube with user input size
     function generateCube(size) {
       const cubeContainer = document.getElementById('cubeContainer');
       cubeContainer.innerHTML = ''; // Clear any existing cube
-      
+
       const faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
       const faceClasses = ['front', 'back', 'left', 'right', 'top', 'bottom'];
-      
+
       // Create the faces of the cube
       faces.forEach((face, index) => {
         const faceElement = document.createElement('div');
         faceElement.classList.add('cube-face', faceClasses[index]);
-        
+
         // Add tiles to each face
         for (let i = 0; i < size * size; i++) {
           const tile = document.createElement('div');
@@ -130,10 +178,10 @@
           tile.style.backgroundColor = colors[index];
           faceElement.appendChild(tile);
         }
-        
+
         cubeContainer.appendChild(faceElement);
       });
-      
+
       // Update CSS grid for size
       const cubeFaces = document.querySelectorAll('.cube-face');
       cubeFaces.forEach(face => {
@@ -152,6 +200,7 @@
         alert('Please enter a valid size between 2 and 100');
       }
     });
+
   </script>
 
 </body>

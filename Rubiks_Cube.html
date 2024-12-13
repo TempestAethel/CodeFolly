@@ -3,120 +3,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rotating Rubik's Cube</title>
+  <title>Rubik's Cube Generator</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      background-color: #1a1a1a;
-      color: #e0e0e0;
-      font-family: monospace;
+      font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
+      background-color: #f0f0f0;
+      overflow: hidden;
+      flex-direction: column;
+      text-align: center;
     }
 
-    .container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      perspective: 600px;
-    }
-
-    .rubiks-cube {
-      width: 300px;
-      height: 300px;
-      position: relative;
-      transform-style: preserve-3d;
-      animation: rotate 5s infinite linear;
-    }
-
-    .face {
+    .footer {
       position: absolute;
+      bottom: 10px;
+      font-size: 16px;
+    }
+
+    .cube-container {
+      position: relative;
       width: 300px;
       height: 300px;
+      transform-style: preserve-3d;
+      animation: rotateCube 10s infinite linear;
+    }
+
+    .cube-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      gap: 5px;
-      transform-origin: center center;
-      background-color: #222;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
 
     .tile {
-      width: 90px;
-      height: 90px;
-      border: 2px solid #000;
       display: flex;
-      justify-content: center;
       align-items: center;
-      font-size: 20px;
-      color: white;
-      font-weight: bold;
+      justify-content: center;
+      font-size: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.2);
     }
 
-    /* Colors of the Rubik's Cube */
-    .front .tile { background-color: #f00; } /* Red */
-    .back .tile { background-color: #ffbf00; } /* Yellow */
-    .left .tile { background-color: #00f; } /* Blue */
-    .right .tile { background-color: #0f0; } /* Green */
-    .top .tile { background-color: #fff; } /* White */
-    .bottom .tile { background-color: #ffa500; } /* Orange */
+    .front  { transform: rotateY(  0deg) translateZ(150px); background-color: red; }
+    .back   { transform: rotateY(180deg) translateZ(150px); background-color: yellow; }
+    .left   { transform: rotateY( 90deg) translateZ(150px); background-color: blue; }
+    .right  { transform: rotateY(-90deg) translateZ(150px); background-color: green; }
+    .top    { transform: rotateX( 90deg) translateZ(150px); background-color: white; }
+    .bottom { transform: rotateX(-90deg) translateZ(150px); background-color: orange; }
 
-    /* Transformations for rotating cube */
-    .front  { transform: translateZ(150px); }
-    .back   { transform: rotateY(180deg) translateZ(150px); }
-    .left   { transform: rotateY(-90deg) translateZ(150px); }
-    .right  { transform: rotateY(90deg) translateZ(150px); }
-    .top    { transform: rotateX(90deg) translateZ(150px); }
-    .bottom { transform: rotateX(-90deg) translateZ(150px); }
+    @keyframes rotateCube {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
+    }
 
-    @keyframes rotate {
-      from {
-        transform: rotateX(0deg) rotateY(0deg);
-      }
-      to {
-        transform: rotateX(360deg) rotateY(360deg);
-      }
+    #menu {
+      display: none;
+      margin: 20px;
+    }
+
+    #sizeInput {
+      width: 50px;
+      padding: 5px;
+      font-size: 16px;
+    }
+
+    #generateButton {
+      padding: 5px 10px;
+      font-size: 16px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="rubiks-cube">
-      <div class="face front">
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-      </div>
-      <div class="face back">
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-      </div>
-      <div class="face left">
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-      </div>
-      <div class="face right">
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-      </div>
-      <div class="face top">
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-      </div>
-      <div class="face bottom">
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-      </div>
-    </div>
+  <div class="cube-container" id="cubeContainer"></div>
+  
+  <div class="footer">
+    Click <strong>M</strong> for menu
   </div>
+
+  <div id="menu">
+    <input type="number" id="sizeInput" min="2" max="100" placeholder="Enter size">
+    <button id="generateButton">Generate Cube</button>
+  </div>
+
+  <script>
+    // Cube color faces
+    const colors = ['red', 'yellow', 'blue', 'green', 'white', 'orange'];
+    
+    // Key listener to toggle the menu
+    document.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'm') {
+        document.getElementById('menu').style.display = 'block';
+      }
+    });
+
+    // Function to generate the cube with user input size
+    function generateCube(size) {
+      const cubeContainer = document.getElementById('cubeContainer');
+      cubeContainer.innerHTML = ''; // Clear any existing cube
+      
+      const faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+      const faceClasses = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+      
+      // Create the faces of the cube
+      faces.forEach((face, index) => {
+        const faceElement = document.createElement('div');
+        faceElement.classList.add('cube-face', faceClasses[index]);
+        
+        // Add tiles to each face
+        for (let i = 0; i < size * size; i++) {
+          const tile = document.createElement('div');
+          tile.classList.add('tile');
+          tile.style.backgroundColor = colors[index];
+          faceElement.appendChild(tile);
+        }
+        
+        cubeContainer.appendChild(faceElement);
+      });
+      
+      // Update CSS grid for size
+      const cubeFaces = document.querySelectorAll('.cube-face');
+      cubeFaces.forEach(face => {
+        face.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+        face.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+      });
+    }
+
+    // Event listener for the generate button
+    document.getElementById('generateButton').addEventListener('click', () => {
+      const size = parseInt(document.getElementById('sizeInput').value, 10);
+      if (size >= 2 && size <= 100) {
+        generateCube(size);
+        document.getElementById('menu').style.display = 'none'; // Hide menu
+      } else {
+        alert('Please enter a valid size between 2 and 100');
+      }
+    });
+  </script>
 
 </body>
 </html>
